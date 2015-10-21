@@ -17,6 +17,9 @@ import java.util.concurrent.*;
 
 public class Threads304v2 {
     // Account is an inner class
+    
+    // We now create a new static object that is used by all
+    // the threads
     private static Total total = new Total();
     
     public static void main(String[] args) {
@@ -53,6 +56,16 @@ public class Threads304v2 {
     // A thread for adding one to the total
     // This thread is spauned 100 times
     // It has to be runnable
+    
+    // A thread can enter a synchronized method ONLY if the thread
+    // can get a key to that object's lock.
+    // Every Java object has a lock with ONE key - but most
+    // of the time they are unlocked and no one cares
+    // So when the thread find a method that is synchronized then
+    // it looks for the object that is specified in the synchronized
+    // expression and only preceeds if it can grab it.
+    // Obviously no other thread can then grab it
+    // so they wait until the key is returned when the method is complete
 
     private static class AddOneTask implements Runnable{
         // Runnable is an interface, and so its run method is abstract
@@ -63,7 +76,12 @@ public class Threads304v2 {
         // to do with it
         @Override
         public void run(){
-            total.add(1);
+            // Grabs the key for the total object and then executes the add
+            // does not return it until this method completes
+            // remember this method has the delay in  it
+            synchronized (total){
+                total.add(1);
+            }
         }   // end of the override  
     }   // end of AddOneTask
     
