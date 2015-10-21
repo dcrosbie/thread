@@ -14,6 +14,8 @@ package threads304v2;
  */
 
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Threads304v2 {
     // Account is an inner class
@@ -79,14 +81,24 @@ public class Threads304v2 {
             // Grabs the key for the total object and then executes the add
             // does not return it until this method completes
             // remember this method has the delay in  it
-            synchronized (total){
-                total.add(1);
-            }
+            // synchronized (total){
+            //    total.add(1);
+            //}
+            
+            total.add(1);   // we remove the sync
+            
         }   // end of the override  
     }   // end of AddOneTask
     
     // Now define an inner class for Total
     private static class Total {
+        // We create a lock
+        // It is reentrant - this means that you can interrupt the 
+        // reentrant code and then re-enter it again at a later date
+        // and get the same answer
+        // A reentrant lock is mutually exclusive
+        private static Lock lock = new ReentrantLock();
+        
         private int totalAmount = 0;
         
         public int getTotal(){
@@ -94,18 +106,27 @@ public class Threads304v2 {
         } // end of getTotal
         
         public void add(int amount){
-            int newTotalAmount = totalAmount + amount;
-        
-            // Now add a delay to illustrate the data corruption problem
+            // We acquire a lock - we wait if we can not get it
+            lock.lock();
+
+            // We put everything inside a try-catch so we ensure lock release
+
             try  {
+                int newTotalAmount = totalAmount + amount;
+            // Now add a delay to illustrate the data corruption problem
             // 5 is 5 milliseconds
-            Thread.sleep(5);
+                Thread.sleep(5);
+                
+                totalAmount = newTotalAmount;
             }
             catch (InterruptedException ex){
             // Do  nothing
             }   // end of catch
+            finally {
+                // release the lock whatever happens!
+                lock.unlock();
+            }
             
-            totalAmount = newTotalAmount;
         }   // end of the add class    
     }   // end of the Total class 
 }      // end of class Threads304v2
