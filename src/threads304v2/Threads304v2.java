@@ -46,7 +46,7 @@ public class Threads304v2 {
             // Apparently do nothing until all the threads are finished
         }
             
-        System.out.println("What is the total?" + total.getBalance());
+        System.out.println("What is the total?" + total.getTotal());
            
     } // end of main
     
@@ -88,11 +88,6 @@ public class Threads304v2 {
             }   // end of catch
             
             totalAmount = newTotalAmount;
-        }
-        
-        
-    }   // end of the Total class
-    
-    
-    
+        }   // end of the add class    
+    }   // end of the Total class 
 }      // end of class Threads304v2
